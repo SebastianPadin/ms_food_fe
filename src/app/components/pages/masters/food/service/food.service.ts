@@ -10,7 +10,7 @@ import { FoodUpdate } from '../model/food';
 })
 export class FoodService {
 
-  private apiUrl = 'https://8080-vallegrandeas222-msfood-izc23vy4et2.ws-us117.gitpod.io/api/foods';
+  private apiUrl = 'https://stunning-waddle-v4x564q7rjj397p-8080.app.github.dev/api/foods';
 
   constructor(private http: HttpClient) { }
 

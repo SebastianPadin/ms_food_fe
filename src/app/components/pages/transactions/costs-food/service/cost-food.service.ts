@@ -20,14 +20,6 @@ export class CostFoodService {
     return this.http.get<FoodCost[]>(`${this.apiUrl}/inactives`);
   }
 
-  getActiveCost(): Observable<ListCost[]> {
-    return this.http.get<ListCost[]>(`${this.apiUrl}/active`);
-  }
-
-  getInactiveCost(): Observable<ListCost[]> {
-    return this.http.get<ListCost[]>(`${this.apiUrl}/inactive`);
-  }
-
   addNewCost(cost: InsertCost): Observable<InsertCost> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     return this.http.post<InsertCost>(this.apiUrl, cost, { headers });
