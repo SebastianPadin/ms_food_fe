@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { FoodCost, InsertCost, ListCost, UpdateCost } from '../model/cost';
+import { FoodCost, InsertCost,UpdateCost } from '../model/cost';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CostFoodService {
 
-  private apiUrl = 'https://8080-vallegrandeas222-msfood-izc23vy4et2.ws-us117.gitpod.io/api/food-costs';
+  private apiUrl = 'https://ideal-space-couscous-w6w4r6gj59q359q6-8080.app.github.dev/api/food-costs';
 
   constructor(private http: HttpClient) { }
 
