@@ -10,7 +10,7 @@ import { FoodUpdate } from '../model/food';
 })
 export class FoodService {
 
-    private apiUrl = 'https://msfood-production.up.railway.app/api/foods';
+    private apiUrl = 'https://msfood-production-689f.up.railway.app/api/foods';
 
     constructor(private http: HttpClient) { }
 

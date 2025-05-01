@@ -34,127 +34,109 @@ export class FoodComponent implements OnInit {
   filteredFoods: Food[] = [];
   currentPage: number = 1;
   itemsPerPage: number = 5;
-  paginatedFoods: Food[] = [];
-
 
   constructor(
     private foodService: FoodService) { }
 
   ngOnInit(): void {
-    this.getFoods();
+    this.loadFoods();
   }
 
-  filterAndPaginate(): void {
-    const filteredFoods = this.filteredFoods.length > 0
+  getTableData(): Food[] {
+    let baseList = this.filteredFoods.length > 0
       ? this.filteredFoods
       : (this.showInactive ? this.foodInactive : this.foodActive);
 
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    this.paginatedFoods = filteredFoods.slice(startIndex, startIndex + this.itemsPerPage);
+    return baseList.slice(startIndex, startIndex + this.itemsPerPage);
+  }
+
+  loadFoods(): void {
+    const serviceMethod = this.showInactive
+      ? this.foodService.getInactiveFoods()
+      : this.foodService.getActiveFoods();
+
+    serviceMethod.subscribe({
+      next: (data: Food[]) => {
+        if (this.showInactive) {
+          this.foodInactive = data;
+        } else {
+          this.foodActive = data;
+        }
+      },
+      error: (err) => {
+        console.error('Error al cargar alimentos:', err);
+      },
+    });
   }
 
   getPages(): number[] {
-    const filteredCount = (this.filteredFoods.length > 0
+    const baseList = this.filteredFoods.length > 0
       ? this.filteredFoods
-      : (this.showInactive ? this.foodInactive : this.foodActive)).length;
+      : (this.showInactive ? this.foodInactive : this.foodActive);
 
-    const totalPages = Math.ceil(filteredCount / this.itemsPerPage);
+    const totalPages = Math.ceil(baseList.length / this.itemsPerPage);
     return Array.from({ length: totalPages }, (_, i) => i + 1);
   }
 
   cambiarPagina(page: number): void {
     this.currentPage = page;
-    this.filterAndPaginate();
-  }
-
-  getFoods(): void {
-    if (this.showInactive) {
-      this.foodService.getInactiveFoods().subscribe({
-        next: (data: Food[]) => {
-          this.foodInactive = data;
-          this.filterAndPaginate();
-        },
-        error: (err) => {
-          console.error('Error al obtener alimentos inactivos:', err);
-        }
-      });
-    } else {
-      this.foodService.getActiveFoods().subscribe({
-        next: (data: Food[]) => {
-          this.foodActive = data;
-          this.filterAndPaginate();
-        },
-        error: (err) => {
-          console.error('Error al obtener alimentos activos:', err);
-        }
-      });
-    }
   }
 
   toggleFoodList(): void {
     this.showInactive = !this.showInactive;
-    this.getFoods();
+    this.filteredFoods = []; // Reiniciar búsqueda al cambiar el switcher
+    this.currentPage = 1; // Reinicia la paginación
+    this.loadFoods();
+  }
+
+
+  filterByType(): void {
+    if (this.foodTypeFilter.trim()) {
+      this.foodService.getFoodsByType(this.foodTypeFilter).subscribe({
+        next: (data: Food[]) => {
+          this.filteredFoods = data;
+          this.currentPage = 1;
+        },
+        error: (err) => {
+          console.error('Error al filtrar por tipo:', err);
+          this.filteredFoods = [];
+        },
+      });
+    } else {
+      this.filteredFoods = [];
+      this.currentPage = 1;
+    }
   }
 
   toggleDescarga(): void {
     this.descargaOpen = !this.descargaOpen;
   }
 
-  getFoodsByType(): void {
-    if (this.foodTypeFilter.trim()) {
-      this.foodService.getFoodsByType(this.foodTypeFilter).subscribe({
-        next: (data: Food[]) => {
-          this.filteredFoods = data;
-          this.filterAndPaginate();
-        },
-        error: (err) => {
-          console.error('Error al obtener alimentos por tipo:', err);
-          this.filteredFoods = [];
-          this.filterAndPaginate();
-        }
-      });
-    } else {
-      this.filteredFoods = [];
-      this.filterAndPaginate();
-    }
-  }
-
   addFood(): void {
     this.foodService.addNewFood(this.newFood).subscribe({
-      next: (data) => {
-        console.log('Alimento agregado:', data);
+      next: () => {
         this.showInactive = false;
-        this.getFoods();
-        this.resetForm();
+        this.loadFoods();
         this.closeModal();
         Swal.fire({
           icon: 'success',
           title: 'Alimento agregado',
-          text: `El alimento ha sido agregado con éxito.`,
+          text: 'El alimento ha sido agregado con éxito.',
           timer: 2000,
-          showConfirmButton: false
+          showConfirmButton: false,
         });
       },
       error: (err) => {
         console.error('Error al agregar alimento:', err);
-        if (err.status === 500) {
-          console.error('Error del servidor:', err.message);
-          Swal.fire({
-            icon: 'error',
-            title: 'Error del servidor',
-            text: 'No se pudo agregar el alimento. Inténtalo de nuevo.',
-          });
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Ocurrió un error al agregar el alimento.',
-          });
-        }
-      }
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al agregar alimento',
+          text: 'Ocurrió un error. Inténtalo nuevamente.',
+        });
+      },
     });
   }
-
 
   DatosFood(food: Food): void {
     this.isModalEdit = true;
@@ -168,30 +150,28 @@ export class FoodComponent implements OnInit {
     };
   }
 
-  updateAlimento(): void {
+  updateFood(): void {
     if (this.foodToEdit) {
       this.foodService.updateFood(this.foodToEdit.id_food, this.foodToEdit).subscribe({
-        next: (data) => {
-          console.log('Alimento actualizado:', data);
-          this.getFoods();
-          this.showInactive = false;
+        next: () => {
+          this.loadFoods();
           this.isModalEdit = false;
           Swal.fire({
             icon: 'success',
             title: 'Alimento actualizado',
-            text: `El alimento ha sido actualizado con éxito.`,
+            text: 'El alimento ha sido actualizado con éxito.',
             timer: 2000,
-            showConfirmButton: false
+            showConfirmButton: false,
           });
         },
         error: (err) => {
           console.error('Error al actualizar alimento:', err);
           Swal.fire({
             icon: 'error',
-            title: 'Error del servidor',
-            text: 'No se pudo agregar el alimento. Inténtalo de nuevo.',
+            title: 'Error al actualizar alimento',
+            text: 'Ocurrió un error. Inténtalo nuevamente.',
           });
-        }
+        },
       });
     }
   }
@@ -207,7 +187,7 @@ export class FoodComponent implements OnInit {
       this.foodService.deactivateFood(this.foodIdToDeactivate).subscribe({
         next: (data) => {
           console.log('Respuesta del servidor:', data);
-          this.getFoods();
+          this.loadFoods();
           this.isModalDeactivate = false;
           Swal.fire({
             icon: 'success',
@@ -241,7 +221,7 @@ export class FoodComponent implements OnInit {
       this.foodService.reactivateFood(this.foodIdToRestore).subscribe({
         next: (data) => {
           console.log('Respuesta del servidor:', data);
-          this.getFoods();
+          this.loadFoods();
           this.isModalRestore = false;
           Swal.fire({
             icon: 'success',

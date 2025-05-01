@@ -28,7 +28,7 @@
       <label for="foodTypeFilter" class="font-semibold mr-2">Buscar por tipo:</label>
       <input id="foodTypeFilter" type="text" class="border rounded p-2" [(ngModel)]="foodTypeFilter"
         placeholder="Escribe el tipo de alimento" />
-      <button class="ml-2 bg-blue-500 text-white font-bold py-2 px-4 rounded" (click)="getFoodsByType()">
+      <button class="ml-2 bg-blue-500 text-white font-bold py-2 px-4 rounded" (click)="filterByType()">
         Buscar
       </button>
     </div>
@@ -90,7 +90,7 @@
       <tbody>
         <!-- Iterar sobre la lista de alimentos -->
         <tr
-          *ngFor="let food of (filteredFoods.length > 0 ? filteredFoods : (showInactive ? foodInactive : foodActive))">
+          *ngFor="let food of getTableData()">
           <td class="px-6 py-4 bg-gray-100">{{ food.foodType }}</td>
           <td class="px-6 py-4 bg-gray-100">{{ food.foodBrand }}</td>
           <td class="px-6 py-4 bg-gray-100">{{ food.packaging }}</td>
@@ -213,7 +213,7 @@
 <div *ngIf="isModalEdit" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
   <div class="bg-white rounded-lg shadow-lg p-6 w-11/12 md:w-1/3">
     <h2 class="text-xl font-bold mb-4">Editar Alimento</h2>
-    <form (ngSubmit)="updateAlimento()">
+    <form (ngSubmit)="updateFood()">
       <div class="mb-4">
         <label for="foodType" class="block text-sm font-medium text-gray-700">Tipo de Alimento</label>
         <select id="foodType" [(ngModel)]="foodToEdit.foodType" name="foodType"
