@@ -8,7 +8,7 @@ import { FoodCost, InsertCost, UpdateCost } from '../model/cost';
 })
 export class CostFoodService {
 
-  private apiUrl = 'https://msfood-production-f128.up.railway.app/api/food-costs';
+  private apiUrl = 'https://msfood-production.up.railway.app/api/food-costs';
 
   constructor(private http: HttpClient) { }
 

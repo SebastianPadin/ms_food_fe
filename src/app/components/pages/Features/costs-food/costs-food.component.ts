@@ -37,30 +37,32 @@ export class CostsFoodComponent implements OnInit {
   filteredCostFoods: FoodCost[] = [];
   currentPage: number = 1;
   itemsPerPage: number = 5;
-  paginatedCost: FoodCost[] = [];
+  filteredWeeks: string[] = [];
+  selectedFeedType: string = '';
 
   constructor(
     private costService: CostFoodService,
-    private foodService: FoodService) { }
+    private foodService: FoodService
+  ) { }
 
   ngOnInit(): void {
     this.getCostFoods();
     this.getActiveFoods();
   }
 
-  filterAndPaginate(): void {
-    const filteredCostFoods = this.filteredCostFoods.length > 0
+  getTableData(): FoodCost[] {
+    let baseList = this.filteredCostFoods.length > 0
       ? this.filteredCostFoods
       : (this.showInactive ? this.costInactive : this.costActive);
 
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    this.paginatedCost = filteredCostFoods.slice(startIndex, startIndex + this.itemsPerPage);
+    return baseList.slice(startIndex, startIndex + this.itemsPerPage);
   }
 
   getPages(): number[] {
-    const filteredCount = (this.filteredCostFoods.length > 0
-      ? this.filteredCostFoods
-      : (this.showInactive ? this.costInactive : this.costActive)).length;
+    const filteredCount = this.filteredCostFoods.length > 0
+      ? this.filteredCostFoods.length
+      : (this.showInactive ? this.costInactive : this.costActive).length;
 
     const totalPages = Math.ceil(filteredCount / this.itemsPerPage);
     return Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -68,7 +70,6 @@ export class CostsFoodComponent implements OnInit {
 
   cambiarPagina(page: number): void {
     this.currentPage = page;
-    this.filterAndPaginate();
   }
 
   getActiveFoods(): void {
@@ -83,27 +84,20 @@ export class CostsFoodComponent implements OnInit {
   }
 
   getCostFoods(): void {
-    if (this.showInactive) {
-      this.costService.getICost().subscribe({
-        next: (data: FoodCost[]) => {
+    const serviceMethod = this.showInactive ? this.costService.getICost() : this.costService.getACost();
+
+    serviceMethod.subscribe({
+      next: (data: FoodCost[]) => {
+        if (this.showInactive) {
           this.costInactive = data;
-          this.filterAndPaginate();
-        },
-        error: (err) => {
-          console.error('Error al obtener el costo de los alimentos inactivos:', err);
-        }
-      });
-    } else {
-      this.costService.getACost().subscribe({
-        next: (data: FoodCost[]) => {
+        } else {
           this.costActive = data;
-          this.filterAndPaginate();
-        },
-        error: (err) => {
-          console.error('Error al obtener el costo de alimentos activos:', err);
         }
-      });
-    }
+      },
+      error: (err) => {
+        console.error('Error al obtener el costo de alimentos:', err);
+      }
+    });
   }
 
   toggleCostList(): void {
@@ -211,17 +205,16 @@ export class CostsFoodComponent implements OnInit {
       this.costService.getFoodCostByWeekNumber(this.costWeekNumberFilter).subscribe({
         next: (data: FoodCost[]) => {
           this.filteredCostFoods = data;
-          this.filterAndPaginate();
+          this.currentPage = 1;
         },
         error: (err) => {
-          console.error('Error al obtener costo de alimentos por tipo:', err);
+          console.error('Error al filtrar por semana:', err);
           this.filteredCostFoods = [];
-          this.filterAndPaginate();
         }
       });
     } else {
       this.filteredCostFoods = [];
-      this.filterAndPaginate();
+      this.currentPage = 1;
     }
   }
 
@@ -371,12 +364,14 @@ export class CostsFoodComponent implements OnInit {
     this.isModalRestore = false;
     this.costIdToRestore = null;
     this.costIdToDelete = null;
+    this.resetForm();
 
   }
 
   resetForm(): void {
     this.newCostFood = {} as InsertCost;
     this.costToEdit = {} as UpdateCost;
+    this.selectedFeedType = '';
   }
 
   validateGrGallina(gramsPerChicken: string): boolean {
@@ -390,4 +385,3 @@ export class CostsFoodComponent implements OnInit {
   }
 
 }
-
