@@ -1,5 +1,5 @@
 export interface Food {
-    id_food: number; 
+    idFood: number; 
     foodType: string; 
     foodBrand: string; 
     amount: string; 
@@ -16,7 +16,7 @@ export interface Food {
     unitMeasure: string; 
   }
   export interface FoodUpdate {
-    id_food: number; 
+    idFood: number; 
     foodType: string; 
     foodBrand: string; 
     amount: string; 
