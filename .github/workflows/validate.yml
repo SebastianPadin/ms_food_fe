@@ -1,4 +1,4 @@
-name: Validate Frontend Code Quality
+name: Validate Frontend Code Quality | Test Playwright
 
 on:
   push:
@@ -26,3 +26,12 @@ jobs:
 
       - name: 📡 Run Build Process (Verifica compilación)
         run: npm run build -- --configuration=production || exit 1
+
+      - name: 🚀 Levantar servidor local
+        run: npm run start &
+
+      - name: ⏱ Esperar que el servidor esté disponible
+        run: sleep 10
+
+      - name: 🎭 Run Playwright tests
+        run: npx playwright install --with-deps && npx playwright test src/tests
