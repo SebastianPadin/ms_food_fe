@@ -10,7 +10,7 @@ test('Prueba simplificada de agregar alimento', async ({ page }) => {
     console.log(`Clic en: ${element}`);
   };
 
-  await page.goto('https://4200-vallegrande-vgwebdashbo-qbguf9p9d3v.ws-us118.gitpod.io/Modulo-Galpon/Alimento', { timeout: 60000 });
+  await page.goto('http://localhost:4200/Modulo-Galpon/Alimento', { timeout: 60000 });
 
   const abrirModalButton = page.locator('button.bg-green-500:has-text("Agregar Alimento")');
   await abrirModalButton.waitFor({ state: 'visible', timeout: 30000 });
