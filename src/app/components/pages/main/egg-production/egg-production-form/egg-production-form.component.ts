@@ -2,7 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { EggProductionService } from '../../../../../../service/egg-production.service';
-import { EggProduction } from '../../../../../../model/EggProduction';
+import { EggProduction } from '../../../../../../interfaces/EggProduction';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -15,9 +15,11 @@ export class EggProductionFormComponent implements OnInit {
   @Input() production: EggProduction | null = null;
   @Output() closeModal = new EventEmitter<void>();
   @Output() formSubmitted = new EventEmitter<void>();
-  
+
   form!: FormGroup;
   loading = false;
+  maxDate!: string; // hoy
+  minDate!: string; // hace 3 días
 
   constructor(
     private fb: FormBuilder,
@@ -25,12 +27,18 @@ export class EggProductionFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Calcular límites de fecha
+    const today = new Date();
+    const threeDaysAgo = new Date();
+    threeDaysAgo.setDate(today.getDate() - 3);
+
+    this.maxDate = today.toISOString().split('T')[0];       // hoy
+    this.minDate = threeDaysAgo.toISOString().split('T')[0]; // hace 3 días
+
     this.initForm();
-    
+
     if (this.production) {
-      // Format the date to YYYY-MM-DD for the date input
       const formattedDate = this.production.registrationDate.split('T')[0];
-      
       this.form.patchValue({
         ...this.production,
         registrationDate: formattedDate
@@ -44,8 +52,23 @@ export class EggProductionFormComponent implements OnInit {
       eggsKilo: [0, [Validators.required, Validators.min(0.1)]],
       priceKilo: [0, [Validators.required, Validators.min(0.1)]],
       registrationDate: [new Date().toISOString().split('T')[0], Validators.required],
-      hensId: [null, Validators.required]
     });
+  }
+
+  getTotalKilos(): number {
+    const quantityEggs = this.form.get('quantityEggs')?.value || 0;
+    const eggsKilo = this.form.get('eggsKilo')?.value || 0;
+
+    if (eggsKilo === 0) return 0;
+
+    return quantityEggs / eggsKilo;
+  }
+
+  getTotalValue(): number {
+    const totalKilos = this.getTotalKilos();
+    const priceKilo = this.form.get('priceKilo')?.value || 0;
+
+    return totalKilos * priceKilo;
   }
 
   onSubmit(): void {
@@ -56,14 +79,17 @@ export class EggProductionFormComponent implements OnInit {
 
     this.loading = true;
     const formData = this.form.value;
-    
+
     if (this.production) {
-      // Update existing record
       const updatedData: EggProduction = {
         id: this.production.id,
-        ...formData
+        quantityEggs: formData.quantityEggs,
+        eggsKilo: formData.eggsKilo,
+        priceKilo: formData.priceKilo,
+        registrationDate: formData.registrationDate,
+        estado: this.production.estado
       };
-      
+
       this.eggProductionService.update(this.production.id, updatedData).subscribe({
         next: () => {
           this.loading = false;
@@ -87,8 +113,16 @@ export class EggProductionFormComponent implements OnInit {
         }
       });
     } else {
-      // Create new record
-      this.eggProductionService.create(formData).subscribe({
+      const newProductionData: EggProduction = {
+        id: 0,
+        quantityEggs: formData.quantityEggs,
+        eggsKilo: formData.eggsKilo,
+        priceKilo: formData.priceKilo,
+        registrationDate: formData.registrationDate,
+        estado: 'A'
+      };
+
+      this.eggProductionService.create(newProductionData).subscribe({
         next: () => {
           this.loading = false;
           Swal.fire({
