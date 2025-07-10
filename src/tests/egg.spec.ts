@@ -10,7 +10,7 @@ test('Prueba simplificada de agregar registro de producción de huevos', async (
   };
 
   // 1. Ir a la página
-  await page.goto('http://localhost:4200/Modulo-Galpon/Producción de huevos', { timeout: 60000 });
+  await page.goto('http://localhost:4200/Modulo-Galpon/Producción%20de%20huevos', { timeout: 60000 });
 
   // 2. Abrir el modal
   const abrirModalButton = page.locator('button.bg-green-500:has-text("Agregar Producción")');
