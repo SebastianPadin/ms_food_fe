@@ -12,9 +12,6 @@ test('Prueba simplificada de agregar registro de producción de huevos', async (
   // 1. Ir a la página
   await page.goto('http://localhost:4200/Modulo-Galpon/Producci%C3%B3n%20de%20huevos', { timeout: 60000 });
 
-  // 2. Esperar a que desaparezca cualquier SweetAlert2
-  await page.locator('.swal2-container').waitFor({ state: 'detached', timeout: 10000 });
-
   // 3. Abrir el modal
   const abrirModalButton = page.locator('button.bg-green-500:has-text("Ingresar Producción")');
   await abrirModalButton.waitFor({ state: 'visible', timeout: 30000 });

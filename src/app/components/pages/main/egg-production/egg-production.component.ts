@@ -71,12 +71,6 @@ export class EggProductionComponent implements OnInit {
       error: (error) => {
         console.error('Error loading egg productions:', error);
         this.loading = false;
-        Swal.fire({
-          title: 'Error!',
-          text: 'No se pudieron cargar los datos de producción de huevos',
-          icon: 'error',
-          confirmButtonText: 'OK'
-        });
       }
     });
   }
