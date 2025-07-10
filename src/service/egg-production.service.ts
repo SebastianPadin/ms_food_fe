@@ -30,4 +30,13 @@ export class EggProductionService {
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  inactivate(id: number): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/inactivate/${id}`, {});
+  }
+
+  activate(id: number): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/activate/${id}`, {});
+  }
+
 }

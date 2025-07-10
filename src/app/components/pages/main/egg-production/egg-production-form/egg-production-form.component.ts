@@ -2,7 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { EggProductionService } from '../../../../../../service/egg-production.service';
-import { EggProduction } from '../../../../../../interfaces/EggProduction';
+import { EggProduction } from '../../../../../../model/EggProduction';
 import Swal from 'sweetalert2';
 
 @Component({

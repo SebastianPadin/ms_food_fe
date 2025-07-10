@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { EggProductionService } from '../../../../../service/egg-production.service';
-import { EggProduction } from '../../../../../interfaces/EggProduction';
+import { EggProduction } from '../../../../../model/EggProduction';
 import { EggProductionFormComponent } from './egg-production-form/egg-production-form.component';
 import Swal from 'sweetalert2';
 

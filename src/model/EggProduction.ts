@@ -1,9 +1,8 @@
 export interface EggProduction {
-    id: number; 
+    id: number;
     quantityEggs: number;
     eggsKilo: number;
     priceKilo: number;
     registrationDate: string;
-    hensId: number;
+    estado: string;  
 }
-  
