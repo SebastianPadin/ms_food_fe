@@ -19,7 +19,7 @@ test('Prueba simplificada de agregar registro de producción de huevos', async (
   logClick('Abrir Modal Ingresar Producción');
 
   // 4. Esperar a que el modal esté visible
-  const modal = page.locator('div:has(h3:has-text("Nuevo Registro de Producción"))');
+  const modal = page.locator('div:has(h3:has-text("Nuevo Registro de Producción"))').first();
   await modal.waitFor({ state: 'visible', timeout: 10000 });
 
   // 5. Llenar el formulario
