@@ -13,7 +13,7 @@ test('Prueba simplificada de agregar registro de producción de huevos', async (
   await page.goto('http://localhost:4200/Modulo-Galpon/Producci%C3%B3n%20de%20huevos', { timeout: 60000 });
 
   // 2. Abrir el modal 
-  const abrirModalButton = page.getByRole('button', { name: /Ingresar Producción/i });
+  const abrirModalButton = page.locator('button.bg-green-500:has-text("Ingresar Producción")');
   await abrirModalButton.waitFor({ state: 'visible', timeout: 30000 });
   await abrirModalButton.click();
   logClick('Abrir Modal Ingresar Producción');
