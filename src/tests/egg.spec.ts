@@ -9,20 +9,23 @@ test('Prueba simplificada de agregar registro de producción de huevos', async (
     console.log(`Clic en: ${element}`);
   };
 
-  // 1. Ir a la página 
+  // 1. Ir a la página
   await page.goto('http://localhost:4200/Modulo-Galpon/Producci%C3%B3n%20de%20huevos', { timeout: 60000 });
 
-  // 2. Abrir el modal 
+  // 2. Esperar a que desaparezca cualquier SweetAlert2
+  await page.locator('.swal2-container').waitFor({ state: 'detached', timeout: 10000 });
+
+  // 3. Abrir el modal
   const abrirModalButton = page.locator('button.bg-green-500:has-text("Ingresar Producción")');
   await abrirModalButton.waitFor({ state: 'visible', timeout: 30000 });
   await abrirModalButton.click();
   logClick('Abrir Modal Ingresar Producción');
 
-  // 3. Esperar a que el modal esté visible
+  // 4. Esperar a que el modal esté visible
   const modal = page.locator('div:has(h3:has-text("Nuevo Registro de Producción"))');
   await modal.waitFor({ state: 'visible', timeout: 10000 });
 
-  // 4. Llenar el formulario
+  // 5. Llenar el formulario
   await page.fill('#quantityEggs', '120');
   logClick('Cantidad de Huevos');
 
@@ -32,17 +35,17 @@ test('Prueba simplificada de agregar registro de producción de huevos', async (
   await page.fill('#priceKilo', '6.5');
   logClick('Precio por kilo');
 
-  const fechaActual = new Date().toISOString().split('T')[0]; // yyyy-mm-dd
+  const fechaActual = new Date().toISOString().split('T')[0];
   await page.fill('#registrationDate', fechaActual);
   logClick('Fecha de registro');
 
-  // 5. Enviar el formulario
+  // 6. Enviar el formulario
   const enviarFormularioButton = page.getByRole('button', { name: /Guardar/i });
   await enviarFormularioButton.waitFor({ state: 'visible', timeout: 10000 });
   await enviarFormularioButton.click();
   logClick('Guardar');
 
-  // 6. Finalizar test
+  // 7. Finalizar test
   const endTime = performance.now();
   const duration = (endTime - startTime) / 1000;
 
